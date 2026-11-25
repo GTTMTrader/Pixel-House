@@ -1,4 +1,12 @@
-    // Pixel House 같이 쓰기: 둘 다 읽고 쓰기 (study-duo 규칙의 isMember() 그대로 씀)
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isMember() {
+      return request.auth != null
+        && request.auth.token.email in ['hellin@study.com', 'moon@study.com'];
+    }
     match /pixelhouse/{houseId}/{document=**} {
       allow read, write: if isMember();
     }
+  }
+}

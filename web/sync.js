@@ -1,4 +1,5 @@
 // 같이 쓰기 (한 집): 생활 기록·가구 연결·집 설정을 Firebase(Firestore)로 두 폰이 맞춤
+//   Firebase 프로젝트 = pixel-house-b99dd (계정 2개: 이메일/비밀번호)
 //   저장 = 그대로 이 폰(localStorage)에 먼저, 그다음 서버로 올림. 서버에서 바뀐 것은 내려받아 화면에 알림(life_sync.js)
 //   같이 쓰는 것: 생활 기록 .md / features.json(가구 연결) / profile.json 중 집·가구·펫·하우스 이름·탭
 //   각자 것: 내 이름·내 모습(아바타)·옷차림·그림 세트·백업 사본
@@ -9,9 +10,9 @@
   if (!RT || !WM) return;
   const fs = RT.fs, ipc = RT.electron.ipcRenderer;
   const HOUSE = 'main';
-  const FIREBASE = {
-    apiKey: 'AIzaSyD3n15JbHIPAIRmRACRvFiTmgEkbVHRqzo', authDomain: 'study-duo-dae68.firebaseapp.com', projectId: 'study-duo-dae68',
-    storageBucket: 'study-duo-dae68.firebasestorage.app', messagingSenderId: '420102682191', appId: '1:420102682191:web:8ba1e32f06390336609c3a',
+  const FIREBASE = { // Firebase 프로젝트 pixel-house (Pixel House 전용)
+    apiKey: 'AIzaSyBrgyOwy9NaYpZaom_TNXFiV3Enxtit1QQ', authDomain: 'pixel-house-b99dd.firebaseapp.com', projectId: 'pixel-house-b99dd',
+    storageBucket: 'pixel-house-b99dd.firebasestorage.app', messagingSenderId: '50419967434', appId: '1:50419967434:web:bbeb7aaca178b911849b33',
   };
   const PROFILE_SHARED = ['house', 'furniture', 'pet', 'cat', 'brand', 'tabsHidden'];
   const FILES = {
@@ -273,7 +274,7 @@
       const st = status === 'error' ? `연결 문제: ${esc(lastErr)}` : status === 'connecting' ? '연결 중…' : on ? `<b>${esc(user.email)}</b> 로 같이 쓰는 중${meta.lastAt ? ' · ' + hm(meta.lastAt) + ' 맞춤' : ''}` : '';
       s.innerHTML = '<h4>같이 쓰기 (한 집)</h4>'
         + (on ? `<p>${st}</p><p>물컵·습관·기록·약속·가구 연결·집 설정을 같이 써요. 내 이름·모습·옷은 각자예요.</p><div class="phw-row"><button type="button" data-a="out">그만 같이 쓰기</button></div>`
-          : `<p>우리의 공부 앱과 같은 계정으로 로그인하면 둘이 한 집을 같이 써요.${st ? '<br>' + st : ''}</p>`
+          : `<p>Pixel House 계정으로 로그인하면 둘이 한 집을 같이 써요.${st ? '<br>' + st : ''}</p>`
           + '<form class="phw-login"><input type="email" name="e" placeholder="이메일" autocomplete="username" required><input type="password" name="p" placeholder="비밀번호" autocomplete="current-password" required><button type="submit" class="main">로그인</button></form>');
       const f = s.querySelector('form');
       if (f) f.addEventListener('submit', async (e) => {
