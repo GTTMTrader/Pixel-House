@@ -1,0 +1,90 @@
+rules_version = '2';
+
+// Pixel House — Firestore 규칙 (Travely 처럼 초대)
+//  - 집 데이터(houses/{집}/files)는 그 집 멤버(members/{uid} status=active)만 읽고 쓴다.
+//  - 집은 로그인한 누구나 만들 수 있고, 만든 사람이 주인(owner).
+//  - 초대 = houses/{집}/invites/{토큰} (추측 불가능한 토큰, 주인만 만듦, 31일 안 만료).
+//  - 초대받은 사람은 유효한 토큰이 있을 때만 스스로 멤버(editor)가 된다.
+//  - users/{uid} = 내 집 목록 (나만 읽고 씀).
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function me() { return request.auth.uid; }
+    function memberPath(h, uid) { return /databases/$(database)/documents/houses/$(h)/members/$(uid); }
+    function invitePath(h, t) { return /databases/$(database)/documents/houses/$(h)/invites/$(t); }
+    function isMember(h) { return signedIn() && exists(memberPath(h, me())) && get(memberPath(h, me())).data.status == 'active'; }
+    function isOwner(h) { return isMember(h) && get(memberPath(h, me())).data.role == 'owner'; }
+    function tokenOk(t) { return t is string && t.matches('^[A-Za-z0-9_-]{32,64}$'); }
+    function strLen(v, a, b) { return v is string && v.size() >= a && v.size() <= b; }
+
+    match /users/{uid} {
+      allow read, write: if signedIn() && uid == me();
+    }
+
+    match /houses/{h} {
+      allow get: if isMember(h);
+      allow list: if false;
+      // 만들기: 같은 batch 안에서 내 owner 멤버 문서도 함께
+      allow create: if signedIn()
+        && request.resource.data.ownerUid == me()
+        && strLen(request.resource.data.name, 1, 60)
+        && getAfter(memberPath(h, me())).data.role == 'owner';
+      allow update: if isOwner(h) && request.resource.data.ownerUid == resource.data.ownerUid;
+      allow delete: if isOwner(h);
+
+      match /members/{uid} {
+        function validOwner() {
+          let d = request.resource.data;
+          return d.role == 'owner' && getAfter(/databases/$(database)/documents/houses/$(h)).data.ownerUid == me();
+        }
+        function validJoin() {
+          let d = request.resource.data;
+          let inv = get(invitePath(h, d.inviteToken)).data;
+          return d.role == 'editor'
+            && tokenOk(d.inviteToken)
+            && exists(invitePath(h, d.inviteToken))
+            && inv.revoked == false
+            && request.time < inv.expiresAt;
+        }
+        allow get: if signedIn() && (uid == me() || isMember(h));
+        allow list: if isMember(h);
+        allow create: if signedIn()
+          && uid == me()
+          && request.resource.data.uid == me()
+          && request.resource.data.status == 'active'
+          && strLen(request.resource.data.name, 1, 40)
+          && !exists(memberPath(h, me()))
+          && (validOwner() || validJoin());
+        // 주인: 다른 사람 내보내기·되돌리기 / 본인: 스스로 나가기
+        allow update: if (isOwner(h) && uid != me() && request.resource.data.role == resource.data.role)
+          || (uid == me() && isMember(h) && request.resource.data.role == resource.data.role && request.resource.data.uid == me());
+        allow delete: if isOwner(h) && uid != me();
+      }
+
+      match /invites/{t} {
+        // 토큰을 아는 로그인 사용자만 그 초대 1건을 봄
+        allow get: if signedIn() && tokenOk(t);
+        allow list: if isOwner(h);
+        allow create: if isOwner(h)
+          && tokenOk(t)
+          && request.resource.data.revoked == false
+          && request.resource.data.createdBy == me()
+          && request.resource.data.expiresAt is timestamp
+          && request.resource.data.expiresAt > request.time
+          && request.resource.data.expiresAt < request.time + duration.value(31, 'd');
+        allow update: if isOwner(h);
+        allow delete: if isOwner(h);
+      }
+
+      // 같이 쓰는 파일: 생활 기록·가구 연결·집 설정. 버전은 정확히 +1
+      match /files/{f} {
+        allow read: if isMember(h);
+        allow write: if isMember(h)
+          && f in ['life', 'features', 'profile']
+          && request.resource.data.t is string && request.resource.data.t.size() < 900000
+          && request.resource.data.v is int
+          && request.resource.data.v == (resource == null ? 1 : resource.data.v + 1);
+      }
+    }
+  }
+}

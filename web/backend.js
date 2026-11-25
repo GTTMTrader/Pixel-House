@@ -252,7 +252,7 @@ Prof.registerSettings({ ipcMain, onChange: (u) => { if (u && PROFILE.id === 'def
   currentSet = SET_NAMES.includes(want) ? want : chooseSet();
   if (q.get('pb') !== '1' || !q.get('set')) {
     let resume = null; try { resume = q.get('resume') ? JSON.parse(q.get('resume')) : null; } catch (e) { resume = null; }
-    history.replaceState(null, '', pageUrl(currentSet, cleanResume(resume)));
+    history.replaceState(null, '', pageUrl(currentSet, cleanResume(resume)) + location.hash);
   }
 })();
 

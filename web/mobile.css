@@ -74,3 +74,17 @@ html, body { -webkit-tap-highlight-color: transparent; touch-action: manipulatio
 .phw-login { display: flex; flex-direction: column; gap: 8px; }
 .phw-login input { font: 16px var(--font); padding: 9px 12px; border: 1.5px solid var(--ui-chip-line); border-radius: 8px; background: #fff; color: var(--A); }
 .phw-sync { margin-bottom: 0; }
+/* 같이 쓰기 */
+.phw-seg { display: flex; border: 2px solid var(--ui-line); border-radius: 9px; overflow: hidden; }
+.phw-seg button { flex: 1; border: 0 !important; border-radius: 0 !important; background: var(--ui-paper) !important; color: var(--A) !important; padding: 8px 6px !important; transition: background .25s cubic-bezier(.25,.1,.25,1), color .25s cubic-bezier(.25,.1,.25,1); }
+.phw-seg button.on { background: var(--ui-sel) !important; color: var(--ui-sel-tx) !important; }
+.phw-err { color: var(--ui-danger); }
+.phw-link { width: 100%; margin-top: 8px; font: 13px var(--font); padding: 8px 10px; border: 1.5px solid var(--ui-chip-line); border-radius: 8px; background: #fff; color: var(--A); }
+.phw-backup .phw-row + .phw-row { margin-top: 8px; }
+.phw-backup p + .phw-row, .phw-backup .phw-login + .phw-row { margin-top: 10px; }
+.phw-invite { position: fixed; inset: 0; z-index: 150; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(41, 38, 47, 0); transition: background .3s cubic-bezier(.25,.1,.25,1); }
+.phw-invite .phw-invite-card { width: min(380px, 100%); margin: 0; background: var(--ui-paper); border: 2px solid var(--ui-line); box-shadow: 0 4px 0 var(--ui-shadow);
+  opacity: 0; transform: translateY(14px) scale(.97); transition: opacity .32s cubic-bezier(.2,.8,.2,1), transform .42s cubic-bezier(.2,.8,.2,1); }
+.phw-invite.on { background: rgba(41, 38, 47, .45); }
+.phw-invite.on .phw-invite-card { opacity: 1; transform: none; }
+.phw-invite h4 { font-size: 17px; margin-bottom: 8px; }
