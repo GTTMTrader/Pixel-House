@@ -1,0 +1,4 @@
+    // Pixel House 같이 쓰기: 둘 다 읽고 쓰기 (study-duo 규칙의 isMember() 그대로 씀)
+    match /pixelhouse/{houseId}/{document=**} {
+      allow read, write: if isMember();
+    }
