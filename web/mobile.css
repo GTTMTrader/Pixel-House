@@ -1,0 +1,73 @@
+/* 모바일 웹판 (폰·태블릿 세로). 데스크톱 화면은 그대로, 좁은 화면에서만 덮음 */
+html, body { -webkit-tap-highlight-color: transparent; touch-action: manipulation; overscroll-behavior: none; }
+#dragbar { display: none !important; }
+.cfg-deskpet, .cfg-esc { display: none !important; } /* 바탕화면 펫·Esc 안내는 폰에 없음 */
+#ob-pick, #ob-dir { display: none !important; } /* 저장 위치 = 이 폰 (고를 것 없음) */
+
+/* 기록 백업 (설정 > 사이드바 탭 아래) */
+.phw-backup { margin-top: 14px; padding: 14px 16px; border: 1.5px solid var(--ui-inner); border-radius: 10px; background: var(--ui-field); }
+.phw-backup h4 { margin: 0 0 4px; font-size: 15px; }
+.phw-backup p { margin: 0 0 10px; font-size: 13px; color: var(--ui-sub); line-height: 1.45; }
+.phw-backup .phw-row { display: flex; flex-wrap: wrap; gap: 8px; }
+.phw-backup button { font: 14px var(--font); padding: 8px 12px; border: 2px solid var(--ui-line); border-radius: 8px; background: var(--ui-paper); color: var(--A); cursor: pointer; }
+.phw-backup button.main { background: var(--ui-sel); color: var(--ui-sel-tx); }
+.phw-toast { position: fixed; left: 50%; bottom: calc(84px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 200; background: var(--A); color: var(--K);
+  padding: 10px 16px; border-radius: 10px; font: 14px var(--font); max-width: 90vw; text-align: center; opacity: 0; transition: opacity .25s ease; pointer-events: none; }
+.phw-toast.on { opacity: 1; }
+
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1100px) {
+  :root { --side: 0px; --bar: env(safe-area-inset-top, 0px); --nav: calc(60px + env(safe-area-inset-bottom, 0px)); }
+  html, body { height: 100%; }
+  #app { height: 100dvh; height: 100svh; flex-direction: column; }
+  #main { height: calc(100svh - var(--bar) - var(--nav)); margin-top: var(--bar); flex: none; }
+  input, select, textarea { font-size: 16px !important; } /* iOS 확대 막기 */
+
+  /* 아래 탭 막대 */
+  #tabs { position: fixed; left: 0; right: 0; bottom: 0; width: auto; height: var(--nav); z-index: 60; flex-direction: row; align-items: stretch; gap: 2px;
+    padding: 6px 6px calc(6px + env(safe-area-inset-bottom, 0px)); border-right: 0; border-top: 2px solid var(--A); }
+  #tabs .brand, #tabs .tab-foot { display: none !important; }
+  #tabs button[role=tab] { flex: 1 1 0; min-width: 0; text-align: center; padding: 0 2px; font-size: 13px; border-radius: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    transition: background .2s cubic-bezier(.25,.1,.25,1), color .2s cubic-bezier(.25,.1,.25,1), transform .15s cubic-bezier(.25,.1,.25,1); }
+  #tabs button[role=tab]:active, #tabs .cfg-open:active { transform: scale(.94); }
+  #tabs button[role=tab]:hover { background: transparent; color: var(--e); }
+  #tabs button[role=tab][aria-selected="true"], #tabs button[role=tab][aria-selected="true"]:hover { background: var(--K); color: var(--A); }
+  #tabs .cfg-open { flex: 0 0 auto; width: auto; flex-direction: column; justify-content: center; gap: 2px; padding: 0 10px; font-size: 11px; margin: 0; }
+  #tabs .cfg-open canvas { width: 18px; height: 18px; }
+
+  /* 생활 탭 */
+  .screen.panel { padding: 18px 14px 40px; -webkit-overflow-scrolling: touch; }
+  .life h2 { font-size: 23px; }
+  .life-head { gap: 10px; margin-bottom: 16px; }
+  .card { padding: 14px 14px 10px; border-left-width: 6px; }
+  .gantt { --gl: 96px; }
+  .g-label { font-size: 13px; padding-right: 6px; }
+  .records { overflow-x: auto; }
+  .records table { min-width: 0; width: 100%; }
+  .records th, .records td { padding: 8px 9px; font-size: 14px; }
+  .mt { grid-template-columns: 1fr auto; grid-auto-rows: auto; gap: 4px 10px; padding: 11px 12px; font-size: 15px; }
+  .mt .mt-text, .mt > :nth-child(3) { grid-column: 1 / -1; }
+  .mts.today .mt { grid-template-columns: 64px 1fr; }
+
+  /* 창(모달) 들이 폰 폭을 넘지 않게 */
+  .bk-overlay, #lm, #slm { padding: 10px; }
+  .bk-form input[type=date], .lm-date, .lm-time, .lm-amount, .mte-in-text, .mte-in-date, .mte-in-time,
+  .he-in-name, .he-in-target, .he-in-furn, .st-form .st-in-name, .st-form .st-in-text, .cfg-input input,
+  .sm-dlg .sm-range input[type="date"], .sm-dlg .sm-plan input[type="date"] { max-width: 100%; }
+  .cfg-input input { width: 100%; }
+  .fn-menu { max-width: calc(100vw - 24px); }
+  .ob-preview-box { width: 100%; height: auto; aspect-ratio: 384 / 320; }
+}
+
+@media (max-width: 820px), (pointer: coarse) and (max-width: 1100px) {
+  /* 처음 설정 */
+  #screen-onboard { padding: 16px 10px 24px; }
+  .ob-steps { gap: 2px; }
+  .ob-steps li:not(.on) { font-size: 0; flex: none; gap: 0; }
+  .ob-steps li + li::before { flex-basis: 8px; margin-right: 2px; }
+  .ob-steps li.on { flex: 1; }
+  .ob-avatars { gap: 8px; }
+  .ob-av { min-width: 0; padding: 10px 4px 8px; }
+  .ob-av canvas { max-width: 100%; height: auto !important; }
+}
+/* "닫기 ✕" (원래 Esc 안내) = 누를 수 있게 */
+.phw-close { pointer-events: auto !important; padding: 6px 8px; margin: -6px -8px; position: relative; z-index: 2; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
