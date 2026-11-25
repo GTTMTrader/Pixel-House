@@ -71,3 +71,6 @@ html, body { -webkit-tap-highlight-color: transparent; touch-action: manipulatio
 }
 /* "닫기 ✕" (원래 Esc 안내) = 누를 수 있게 */
 .phw-close { pointer-events: auto !important; padding: 6px 8px; margin: -6px -8px; position: relative; z-index: 2; cursor: pointer; text-decoration: underline; text-underline-offset: 2px; white-space: nowrap; }
+.phw-login { display: flex; flex-direction: column; gap: 8px; }
+.phw-login input { font: 16px var(--font); padding: 9px 12px; border: 1.5px solid var(--ui-chip-line); border-radius: 8px; background: #fff; color: var(--A); }
+.phw-sync { margin-bottom: 0; }
